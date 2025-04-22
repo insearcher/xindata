@@ -1,10 +1,11 @@
-import os
 import io
+import os
 from contextlib import redirect_stdout, redirect_stderr
+
+from dotenv import load_dotenv
 from langchain.agents.agent_types import AgentType
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
 from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -52,7 +53,7 @@ class PandasAgentService:
         self.agent = create_pandas_dataframe_agent(
             self.llm,
             self.df,
-            verbose=verbose,  # Включаем/отключаем подробный вывод в зависимости от параметра
+            verbose=verbose,
             agent_type=AgentType.OPENAI_FUNCTIONS,
             allow_dangerous_code=True,
             prefix=agent_prefix
