@@ -1,28 +1,33 @@
 import typer
 from dotenv import load_dotenv
-from rich.console import Console
 from rich.prompt import Prompt
 
 from src.app import (
-    check_api_key, check_file_exists, load_data_with_progress,
-    initialize_agent, process_query
+    check_api_key, check_file_exists, load_data,
+    initialize_agent, process_query, DEFAULT_DATA_PATH
 )
 from src.ui import (
-    display_welcome_banner, display_example_questions,
-    display_help_message
+    console, display_welcome_banner, display_example_questions,
+    display_help_message, EXIT_COMMANDS,
+    HELP_COMMANDS, EXAMPLES_COMMANDS
 )
 
 load_dotenv()
 
 app = typer.Typer()
-console = Console()
 
 
 @app.command()
 def interactive(
-        data_file: str = typer.Option("data/freelancer_earnings_bd.csv", "--data", "-d", help="Путь к CSV файлу с данными"),
+        data_file: str = typer.Option(DEFAULT_DATA_PATH, "--data", "-d", help="Путь к CSV файлу с данными"),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="Включить подробное логгирование")
 ):
+    """
+    Запускает интерактивный режим анализа данных фрилансеров.
+
+    Пользователь может задавать вопросы на естественном языке,
+    и система будет их анализировать с помощью LLM.
+    """
     if not check_api_key():
         raise typer.Exit(1)
 
@@ -35,7 +40,7 @@ def interactive(
     if not data_path:
         raise typer.Exit(1)
 
-    df = load_data_with_progress(data_path)
+    df = load_data(data_path)
     if df is None:
         raise typer.Exit(1)
 
@@ -51,12 +56,12 @@ def interactive(
     while True:
         user_query = Prompt.ask("\n[bold blue]>[/bold blue]")
 
-        if user_query.lower() in ['выход', 'exit', 'quit', 'q']:
+        if user_query.lower() in EXIT_COMMANDS:
             console.print("[bold]Спасибо за использование системы анализа данных о фрилансерах. До свидания![/bold]")
             break
-        elif user_query.lower() in ['примеры', 'examples']:
+        elif user_query.lower() in EXAMPLES_COMMANDS:
             display_example_questions()
-        elif user_query.lower() in ['помощь', 'help']:
+        elif user_query.lower() in HELP_COMMANDS:
             display_help_message()
         elif user_query.strip():
             process_query(agent_service, user_query)
