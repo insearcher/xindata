@@ -32,9 +32,7 @@ def display_help_message():
         "Доступные команды:\n"
         "- [bold]выход[/bold], [bold]exit[/bold], [bold]quit[/bold], [bold]q[/bold]: Выход из программы\n"
         "- [bold]примеры[/bold], [bold]examples[/bold]: Показать примеры вопросов\n"
-        "- [bold]помощь[/bold], [bold]help[/bold]: Показать это сообщение\n"
-        "- [bold]история[/bold], [bold]history[/bold]: Показать историю ваших запросов\n"
-        "- [bold]сохранить[/bold], [bold]save[/bold]: Сохранить последний результат в файл",
+        "- [bold]помощь[/bold], [bold]help[/bold]: Показать это сообщение",
         title="Помощь",
         border_style="green"
     ))
