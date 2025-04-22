@@ -112,7 +112,27 @@ def process_query(agent_service: PandasAgentService, query: str) -> Optional[str
         if result.get("error"):
             display_error(result['error'])
             return None
-        console.print(f"Ответ: {result['answer']}")
+        from rich.panel import Panel
+        from rich.console import Console
+        from rich.theme import Theme
+
+        formatted_answer = result['answer']
+
+
+        import re
+        formatted_answer = re.sub(
+            r'(\$?\d+(?:\.\d+)?)',
+            r'[cyan]\1[/cyan]',
+            formatted_answer
+        )
+
+        console.print(
+            Panel.fit(
+                formatted_answer,
+                title="[bold cyan]Ответ[/bold cyan]",
+                border_style="cyan"
+            )
+        )
         return result["answer"]
     except Exception as e:
         display_error("Ошибка обработки запроса", e)
