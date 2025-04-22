@@ -113,10 +113,10 @@
     ],
     "example_questions": {
         "crypto_vs_other": {
-            "crypto_earnings": NaN,
+            "crypto_earnings": -1.0,
             "other_earnings": 5017.566666666667,
-            "difference": NaN,
-            "percentage": NaN
+            "difference": 0,
+            "percentage": 0
         },
         "region_earnings": [
             {

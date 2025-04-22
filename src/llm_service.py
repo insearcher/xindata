@@ -25,7 +25,7 @@ class LLMService:
         if not self.api_key:
             raise ValueError("Переменная окружения OPENAI_API_KEY не установлена")
 
-         self.llm = ChatOpenAI(
+        self.llm = ChatOpenAI(
             temperature=0,  # Для детерминированных ответов
             openai_api_key=self.api_key,
             model=model_name

@@ -6,7 +6,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from src.data_analysis import load_data
-from src.query_engine import QueryEngine
+from src.pandas_agent import PandasAgentService
 
 # Загрузка переменных окружения из .env файла
 load_dotenv()
@@ -49,17 +49,28 @@ def main():
         print(f"Ошибка при загрузке данных: {e}")
         return
     
-    # Инициализация движка запросов
-    print("\nИнициализация движка запросов...")
+    # Инициализация Pandas Agent
+    print("\nИнициализация Pandas Agent...")
     try:
-        engine = QueryEngine(df)
-        print("Движок запросов инициализирован успешно.")
+        agent_service = PandasAgentService(df, model_name="gpt-4o-mini")
+        print("Pandas Agent инициализирован успешно.")
     except Exception as e:
-        print(f"Ошибка инициализации движка запросов: {e}")
+        print(f"Ошибка инициализации Pandas Agent: {e}")
         return
     
     print("\nСистема готова. Вы можете задавать вопросы о данных фрилансеров.")
     print("Введите 'exit' или 'quit' для завершения сеанса.")
+    print()
+    
+    # Пример вопросов
+    example_questions = [
+        "Насколько выше доход у фрилансеров, принимающих оплату в криптовалюте, по сравнению с другими способами оплаты?",
+        "Как распределяется доход фрилансеров в зависимости от региона проживания?",
+        "Какой процент фрилансеров, считающих себя экспертами, выполнил менее 100 проектов?"
+    ]
+    print("Примеры вопросов:")
+    for i, q in enumerate(example_questions, 1):
+        print(f"{i}. {q}")
     print()
     
     # Основной цикл взаимодействия
@@ -75,19 +86,11 @@ def main():
         # Обрабатываем запрос
         print("\nАнализирую ваш вопрос...")
         try:
-            result = engine.process_query(user_query)
+            result = agent_service.process_query(user_query)
             
             if result["error"]:
                 print(f"Ошибка: {result['error']}")
                 continue
-            
-            print("\nСгенерированный код:")
-            print("```python")
-            print(result["code"])
-            print("```")
-            
-            print("\nРезультат выполнения:")
-            print(result["result"])
             
             print("\nОтвет:")
             print(result["answer"])
