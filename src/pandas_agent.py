@@ -36,12 +36,13 @@ class PandasAgentService:
             model=model_name
         )
         
-        # Создание Pandas Agent
+        # Создание Pandas Agent с явным разрешением выполнения произвольного кода
         self.agent = create_pandas_dataframe_agent(
             self.llm,
             self.df,
             verbose=True,
-            agent_type=AgentType.OPENAI_FUNCTIONS
+            agent_type=AgentType.OPENAI_FUNCTIONS,
+            allow_dangerous_code=True  # Явное разрешение выполнения произвольного кода
         )
     
     def process_query(self, query):
@@ -69,7 +70,7 @@ class PandasAgentService:
             response = self.agent.invoke(query)
             
             # Получаем ответ
-            result["answer"] = response
+            result["answer"] = response["output"]
             
             return result
         except Exception as e:

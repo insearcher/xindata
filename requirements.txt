@@ -8,3 +8,4 @@ openai
 langchain
 langchain-openai
 langchain-experimental
+tabulate
