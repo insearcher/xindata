@@ -5,6 +5,8 @@
 import os
 import pandas as pd
 from dotenv import load_dotenv
+from src.data_analysis import load_data
+from src.query_engine import QueryEngine
 
 # Загрузка переменных окружения из .env файла
 load_dotenv()
@@ -15,6 +17,14 @@ def main():
     """
     print("Система анализа данных о фрилансерах")
     print("====================================")
+    
+    # Проверка наличия API ключа OpenAI
+    if not os.getenv("OPENAI_API_KEY"):
+        print("Ошибка: Переменная окружения OPENAI_API_KEY не установлена.")
+        print("Пожалуйста, создайте файл .env в корне проекта и добавьте в него строку:")
+        print("OPENAI_API_KEY=ваш_ключ_api")
+        print("Вы можете получить API ключ на сайте https://platform.openai.com/account/api-keys")
+        return
     
     # Путь к файлу с данными
     data_path = os.path.join("data", "freelancer_earnings_bd.csv")
@@ -34,16 +44,58 @@ def main():
     
     # Загрузка данных
     try:
-        df = pd.read_csv(data_path)
-        print(f"Загружено {len(df)} записей из файла {data_path}")
+        df = load_data(data_path)
     except Exception as e:
         print(f"Ошибка при загрузке данных: {e}")
         return
     
-    # TODO: Реализовать основной функционал приложения
-    # На данный момент это просто заготовка для дальнейшей разработки
+    # Инициализация движка запросов
+    print("\nИнициализация движка запросов...")
+    try:
+        engine = QueryEngine(df)
+        print("Движок запросов инициализирован успешно.")
+    except Exception as e:
+        print(f"Ошибка инициализации движка запросов: {e}")
+        return
     
-    print("Система готова. Продолжим разработку в рамках Фазы 1.")
+    print("\nСистема готова. Вы можете задавать вопросы о данных фрилансеров.")
+    print("Введите 'exit' или 'quit' для завершения сеанса.")
+    print()
+    
+    # Основной цикл взаимодействия
+    while True:
+        # Получаем ввод пользователя
+        user_query = input("> ")
+        
+        # Проверяем, хочет ли пользователь выйти
+        if user_query.lower() in ['exit', 'quit', 'выход']:
+            print("Спасибо за использование системы анализа данных о фрилансерах. До свидания!")
+            break
+        
+        # Обрабатываем запрос
+        print("\nАнализирую ваш вопрос...")
+        try:
+            result = engine.process_query(user_query)
+            
+            if result["error"]:
+                print(f"Ошибка: {result['error']}")
+                continue
+            
+            print("\nСгенерированный код:")
+            print("```python")
+            print(result["code"])
+            print("```")
+            
+            print("\nРезультат выполнения:")
+            print(result["result"])
+            
+            print("\nОтвет:")
+            print(result["answer"])
+            print()
+        except Exception as e:
+            print(f"Ошибка обработки запроса: {e}")
+        
+        print()
 
 if __name__ == "__main__":
     main()
