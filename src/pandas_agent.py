@@ -17,7 +17,7 @@ load_dotenv()
 class PandasAgentService:
     """Сервис для анализа данных с использованием LangChain Pandas Agent."""
     
-    def __init__(self, df, model_name="gpt-4o-mini", temperature=0.0):
+    def __init__(self, df, model_name="gpt-4o-mini", temperature=0.0, verbose=False):
         """
         Инициализация сервиса Pandas Agent.
         
@@ -25,12 +25,14 @@ class PandasAgentService:
             df (pd.DataFrame): DataFrame с данными
             model_name (str): Название модели для использования
             temperature (float): Параметр temperature для модели
+            verbose (bool): Включить подробное логгирование
         """
         self.api_key = os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("Переменная окружения OPENAI_API_KEY не установлена")
         
         self.df = df
+        self.verbose = verbose
         
         # Инициализация LLM
         self.llm = ChatOpenAI(
@@ -61,11 +63,11 @@ class PandasAgentService:
         ```
         """
         
-        # Создание Pandas Agent с отключением подробного вывода
+        # Создание Pandas Agent с учетом режима подробного логгирования
         self.agent = create_pandas_dataframe_agent(
             self.llm,
             self.df,
-            verbose=False,  # Отключаем подробный вывод
+            verbose=verbose,  # Включаем/отключаем подробный вывод в зависимости от параметра
             agent_type=AgentType.OPENAI_FUNCTIONS,
             allow_dangerous_code=True,
             prefix=agent_prefix
@@ -92,12 +94,16 @@ class PandasAgentService:
         }
         
         try:
-            # Перенаправляем stdout и stderr, чтобы скрыть промежуточные выводы
-            stdout_buffer = io.StringIO()
-            stderr_buffer = io.StringIO()
-            
-            with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
-                # Обрабатываем запрос с помощью агента
+            # Перенаправляем stdout и stderr только если verbose=False
+            if not self.verbose:
+                stdout_buffer = io.StringIO()
+                stderr_buffer = io.StringIO()
+                
+                with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
+                    # Обрабатываем запрос с помощью агента
+                    response = self.agent.invoke(query)
+            else:
+                # Если режим подробного логгирования включен, выводим все в консоль
                 response = self.agent.invoke(query)
             
             # Получаем ответ

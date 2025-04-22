@@ -60,14 +60,14 @@ def check_file_exists(file_path):
     return file_path
 
 # Функция для инициализации агента
-def initialize_agent(df):
+def initialize_agent(df, verbose=False):
     try:
         with Progress() as progress:
             task = progress.add_task("[cyan]Инициализация ИИ агента...", total=1)
             # Небольшая задержка для визуального эффекта
             import time
             time.sleep(1)
-            agent_service = PandasAgentService(df, model_name="gpt-4o-mini")
+            agent_service = PandasAgentService(df, model_name="gpt-4o-mini", verbose=verbose)
             progress.update(task, advance=1)
         console.print("[green]✓[/green] ИИ агент успешно инициализирован")
         return agent_service
@@ -87,7 +87,8 @@ def save_to_file(query, result, file_path="results.txt"):
 @app.command()
 def interactive(
     data_file: str = typer.Option("data/freelancer_earnings_bd.csv", "--data", "-d", help="Путь к CSV файлу с данными"),
-    save_results: bool = typer.Option(False, "--save", "-s", help="Сохранять результаты в файл")
+    save_results: bool = typer.Option(False, "--save", "-s", help="Сохранять результаты в файл"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Включить подробное логгирование")
 ):
     """
     Запуск интерактивного режима для анализа данных о фрилансерах.
@@ -97,6 +98,10 @@ def interactive(
         console.print("[bold red]Ошибка:[/bold red] API ключ OpenAI не найден")
         console.print("Пожалуйста, установите переменную окружения OPENAI_API_KEY или создайте файл .env")
         raise typer.Exit(1)
+    
+    # Отображение информации о режиме логгирования
+    if verbose:
+        console.print("[yellow]Режим подробного логгирования включен[/yellow]")
     
     # Отображение приветствия
     display_welcome_banner()
@@ -117,7 +122,7 @@ def interactive(
     console.print(f"[green]✓[/green] Загружено {len(df)} записей из {data_path}")
     
     # Инициализация агента
-    agent_service = initialize_agent(df)
+    agent_service = initialize_agent(df, verbose)
     
     # Отображение примеров вопросов
     display_example_questions()
@@ -178,7 +183,7 @@ def interactive(
         # Обработка запроса
         console.print("Анализирую ваш запрос...")
         try:
-            # Отключаем вывод лишней информации
+            # Обрабатываем запрос с учетом режима логгирования
             result = agent_service.process_query(user_query)
             
             if result.get("error"):
@@ -209,7 +214,8 @@ def interactive(
 def query(
     question: str = typer.Argument(..., help="Вопрос о данных"),
     data_file: str = typer.Option("data/freelancer_earnings_bd.csv", "--data", "-d", help="Путь к CSV файлу с данными"),
-    save_result: bool = typer.Option(False, "--save", "-s", help="Сохранить результат в файл")
+    save_result: bool = typer.Option(False, "--save", "-s", help="Сохранить результат в файл"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Включить подробное логгирование")
 ):
     """
     Выполнение одиночного запроса и выход.
@@ -219,6 +225,10 @@ def query(
         console.print("[bold red]Ошибка:[/bold red] API ключ OpenAI не найден")
         console.print("Пожалуйста, установите переменную окружения OPENAI_API_KEY или создайте файл .env")
         raise typer.Exit(1)
+    
+    # Отображение информации о режиме логгирования
+    if verbose:
+        console.print("[yellow]Режим подробного логгирования включен[/yellow]")
     
     # Проверка и загрузка файла данных
     data_path = check_file_exists(data_file)
@@ -234,12 +244,12 @@ def query(
             raise typer.Exit(1)
     
     # Инициализация агента
-    agent_service = initialize_agent(df)
+    agent_service = initialize_agent(df, verbose)
     
     # Обработка запроса
     console.print(f"Анализирую запрос: {question}")
     try:
-        # Отключаем отображение промежуточных шагов
+        # Обрабатываем запрос с учетом режима логгирования
         result = agent_service.process_query(question)
         
         if result.get("error"):
