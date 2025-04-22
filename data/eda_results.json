@@ -1,0 +1,178 @@
+{
+    "schema": [
+        {
+            "name": "Freelancer_ID",
+            "type": "int64",
+            "unique_values": null
+        },
+        {
+            "name": "Job_Category",
+            "type": "object",
+            "unique_values": [
+                "Web Development",
+                "App Development",
+                "Data Entry",
+                "Digital Marketing",
+                "Customer Support",
+                "Content Writing",
+                "Graphic Design",
+                "SEO"
+            ]
+        },
+        {
+            "name": "Platform",
+            "type": "object",
+            "unique_values": [
+                "Fiverr",
+                "PeoplePerHour",
+                "Upwork",
+                "Toptal",
+                "Freelancer"
+            ]
+        },
+        {
+            "name": "Experience_Level",
+            "type": "object",
+            "unique_values": [
+                "Beginner",
+                "Intermediate",
+                "Expert"
+            ]
+        },
+        {
+            "name": "Client_Region",
+            "type": "object",
+            "unique_values": [
+                "Asia",
+                "Australia",
+                "UK",
+                "Europe",
+                "USA",
+                "Middle East",
+                "Canada"
+            ]
+        },
+        {
+            "name": "Payment_Method",
+            "type": "object",
+            "unique_values": [
+                "Mobile Banking",
+                "Crypto",
+                "Bank Transfer",
+                "PayPal"
+            ]
+        },
+        {
+            "name": "Job_Completed",
+            "type": "int64",
+            "unique_values": null
+        },
+        {
+            "name": "Earnings_USD",
+            "type": "int64",
+            "unique_values": null
+        },
+        {
+            "name": "Hourly_Rate",
+            "type": "float64",
+            "unique_values": null
+        },
+        {
+            "name": "Job_Success_Rate",
+            "type": "float64",
+            "unique_values": null
+        },
+        {
+            "name": "Client_Rating",
+            "type": "float64",
+            "unique_values": null
+        },
+        {
+            "name": "Job_Duration_Days",
+            "type": "int64",
+            "unique_values": null
+        },
+        {
+            "name": "Project_Type",
+            "type": "object",
+            "unique_values": [
+                "Fixed",
+                "Hourly"
+            ]
+        },
+        {
+            "name": "Rehire_Rate",
+            "type": "float64",
+            "unique_values": null
+        },
+        {
+            "name": "Marketing_Spend",
+            "type": "int64",
+            "unique_values": null
+        }
+    ],
+    "example_questions": {
+        "crypto_vs_other": {
+            "crypto_earnings": NaN,
+            "other_earnings": 5017.566666666667,
+            "difference": NaN,
+            "percentage": NaN
+        },
+        "region_earnings": [
+            {
+                "Client_Region": "Canada",
+                "mean": 5350.134146341464,
+                "median": 5435.5,
+                "std": 2883.3109812478388,
+                "count": 246
+            },
+            {
+                "Client_Region": "Asia",
+                "mean": 5172.284697508897,
+                "median": 5297.0,
+                "std": 3032.978078687794,
+                "count": 281
+            },
+            {
+                "Client_Region": "UK",
+                "mean": 5047.089285714285,
+                "median": 4872.5,
+                "std": 2923.1008102421292,
+                "count": 280
+            },
+            {
+                "Client_Region": "Australia",
+                "mean": 4966.097315436242,
+                "median": 5296.0,
+                "std": 2908.7981343602073,
+                "count": 298
+            },
+            {
+                "Client_Region": "Europe",
+                "mean": 4890.530534351145,
+                "median": 5000.0,
+                "std": 3050.312710089291,
+                "count": 262
+            },
+            {
+                "Client_Region": "USA",
+                "mean": 4872.948630136986,
+                "median": 4643.5,
+                "std": 2839.25076041437,
+                "count": 292
+            },
+            {
+                "Client_Region": "Middle East",
+                "mean": 4870.817869415808,
+                "median": 4971.0,
+                "std": 2849.2333217703454,
+                "count": 291
+            }
+        ],
+        "experts_less_than_100": {
+            "total_experts": 641,
+            "experts_less_than_100": 217,
+            "percentage": 33.853354134165365
+        }
+    }
+}
