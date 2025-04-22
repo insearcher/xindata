@@ -1,26 +1,12 @@
-"""
-Модуль для взаимодействия с языковыми моделями
-"""
-
 import os
-from typing import Optional
 from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 
-# Загрузка переменных окружения для API ключей
 load_dotenv()
 
+
 class LLMService:
-    """Сервис для взаимодействия с языковыми моделями."""
-
-    def __init__(self, model_name="gpt-3.5-turbo"):
-        """
-        Инициализация LLM сервиса.
-
-        Args:
-            model_name (str): Название модели для использования
-        """
+    def __init__(self, model_name: str):
         self.api_key = os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("Переменная окружения OPENAI_API_KEY не установлена")
@@ -31,7 +17,6 @@ class LLMService:
             model=model_name
         )
 
-        # Настройка шаблонов запросов
         self.code_prompt_template = """Ты - ассистент по анализу данных, который помогает анализировать DataFrame в pandas.
 
 DataFrame df содержит следующие колонки:
@@ -88,16 +73,6 @@ Python код:"""
 Твой ответ:"""
 
     def generate_code(self, question: str, schema: str) -> str:
-        """
-        Генерирует Python-код для ответа на вопрос пользователя.
-
-        Args:
-            question (str): Вопрос пользователя
-            schema (str): Информация о схеме данных
-
-        Returns:
-            str: Сгенерированный Python-код
-        """
         prompt = self.code_prompt_template.format(
             schema=schema,
             question=question
@@ -107,16 +82,6 @@ Python код:"""
         return response.content.strip()
 
     def generate_answer(self, question: str, result: str) -> str:
-        """
-        Генерирует ответ на естественном языке на основе результата выполнения кода.
-
-        Args:
-            question (str): Исходный вопрос пользователя
-            result (str): Результат выполнения кода
-
-        Returns:
-            str: Ответ на естественном языке
-        """
         prompt = self.answer_prompt_template.format(
             question=question,
             result=result
