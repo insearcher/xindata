@@ -36,13 +36,36 @@ class PandasAgentService:
             model=model_name
         )
         
+        # Инструкции для агента
+        agent_prefix = """
+        Ты - аналитик данных, работающий с DataFrame, содержащим информацию о фрилансерах.
+        Твоя задача - отвечать на вопросы о данных, основываясь на анализе DataFrame.
+        
+        ВАЖНЫЕ ПРАВИЛА:
+        1. НЕ используй функции визуализации (plt.plot, plt.bar, plt.show и т.д.)
+        2. Предоставляй ответы только в текстовом формате
+        3. Если нужно показать распределение или агрегацию, используй текстовое форматирование (например, таблицы с помощью .to_string())
+        4. Для денежных значений используй форматирование с символом $ и округлением до 2 знаков
+        5. Давай краткие, но информативные ответы
+        6. Для ответа на вопрос о распределении данных по категориям, используй группировку и агрегацию без визуализации
+        
+        Пример для вопроса о распределении дохода по регионам:
+        ```python
+        region_stats = df.groupby('Client_Region')['Earnings_USD'].agg(['mean', 'median', 'count']).reset_index()
+        region_stats = region_stats.sort_values(by='mean', ascending=False)
+        for _, row in region_stats.iterrows():
+            print(f"{row['Client_Region']}: ${row['mean']:.2f} (медиана: ${row['median']:.2f}, кол-во: {row['count']})")
+        ```
+        """
+        
         # Создание Pandas Agent с явным разрешением выполнения произвольного кода
         self.agent = create_pandas_dataframe_agent(
             self.llm,
             self.df,
             verbose=True,
             agent_type=AgentType.OPENAI_FUNCTIONS,
-            allow_dangerous_code=True  # Явное разрешение выполнения произвольного кода
+            allow_dangerous_code=True,
+            prefix=agent_prefix
         )
     
     def process_query(self, query):

@@ -17,7 +17,7 @@ def main():
     """
     print("Система анализа данных о фрилансерах")
     print("====================================")
-    
+
     # Проверка наличия API ключа OpenAI
     if not os.getenv("OPENAI_API_KEY"):
         print("Ошибка: Переменная окружения OPENAI_API_KEY не установлена.")
@@ -25,10 +25,10 @@ def main():
         print("OPENAI_API_KEY=ваш_ключ_api")
         print("Вы можете получить API ключ на сайте https://platform.openai.com/account/api-keys")
         return
-    
+
     # Путь к файлу с данными
     data_path = os.path.join("data", "freelancer_earnings_bd.csv")
-    
+
     # Проверка существования файла
     if not os.path.exists(data_path):
         # Если полный файл отсутствует, используем тестовый
@@ -41,14 +41,14 @@ def main():
             print("Пожалуйста, скачайте датасет по ссылке: https://www.kaggle.com/datasets/shohinurpervezshohan/freelancer-earnings-and-job-trends")
             print("и поместите его в папку data/")
             return
-    
+
     # Загрузка данных
     try:
         df = load_data(data_path)
     except Exception as e:
         print(f"Ошибка при загрузке данных: {e}")
         return
-    
+
     # Инициализация Pandas Agent
     print("\nИнициализация Pandas Agent...")
     try:
@@ -57,47 +57,49 @@ def main():
     except Exception as e:
         print(f"Ошибка инициализации Pandas Agent: {e}")
         return
-    
+
     print("\nСистема готова. Вы можете задавать вопросы о данных фрилансеров.")
     print("Введите 'exit' или 'quit' для завершения сеанса.")
     print()
-    
+
     # Пример вопросов
     example_questions = [
         "Насколько выше доход у фрилансеров, принимающих оплату в криптовалюте, по сравнению с другими способами оплаты?",
         "Как распределяется доход фрилансеров в зависимости от региона проживания?",
-        "Какой процент фрилансеров, считающих себя экспертами, выполнил менее 100 проектов?"
+        "Какой процент фрилансеров, считающих себя экспертами, выполнил менее 100 проектов?",
+        "Какая категория работы имеет самый высокий средний доход?",
+        "Существует ли корреляция между рейтингом клиента и доходом фрилансера?"
     ]
     print("Примеры вопросов:")
     for i, q in enumerate(example_questions, 1):
         print(f"{i}. {q}")
     print()
-    
+
     # Основной цикл взаимодействия
     while True:
         # Получаем ввод пользователя
         user_query = input("> ")
-        
+
         # Проверяем, хочет ли пользователь выйти
         if user_query.lower() in ['exit', 'quit', 'выход']:
             print("Спасибо за использование системы анализа данных о фрилансерах. До свидания!")
             break
-        
+
         # Обрабатываем запрос
         print("\nАнализирую ваш вопрос...")
         try:
             result = agent_service.process_query(user_query)
-            
-            if result["error"]:
+
+            if result.get("error"):
                 print(f"Ошибка: {result['error']}")
                 continue
-            
+
             print("\nОтвет:")
             print(result["answer"])
             print()
         except Exception as e:
             print(f"Ошибка обработки запроса: {e}")
-        
+
         print()
 
 if __name__ == "__main__":
