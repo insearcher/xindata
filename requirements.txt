@@ -9,3 +9,5 @@ langchain
 langchain-openai
 langchain-experimental
 tabulate
+typer
+rich
