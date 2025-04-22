@@ -3,6 +3,9 @@
 """
 
 import os
+import sys
+import io
+from contextlib import redirect_stdout, redirect_stderr
 from langchain.agents.agent_types import AgentType
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
 from langchain_openai import ChatOpenAI
@@ -58,11 +61,11 @@ class PandasAgentService:
         ```
         """
         
-        # Создание Pandas Agent с явным разрешением выполнения произвольного кода
+        # Создание Pandas Agent с отключением подробного вывода
         self.agent = create_pandas_dataframe_agent(
             self.llm,
             self.df,
-            verbose=True,
+            verbose=False,  # Отключаем подробный вывод
             agent_type=AgentType.OPENAI_FUNCTIONS,
             allow_dangerous_code=True,
             prefix=agent_prefix
@@ -89,8 +92,13 @@ class PandasAgentService:
         }
         
         try:
-            # Обрабатываем запрос с помощью агента
-            response = self.agent.invoke(query)
+            # Перенаправляем stdout и stderr, чтобы скрыть промежуточные выводы
+            stdout_buffer = io.StringIO()
+            stderr_buffer = io.StringIO()
+            
+            with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
+                # Обрабатываем запрос с помощью агента
+                response = self.agent.invoke(query)
             
             # Получаем ответ
             result["answer"] = response["output"]
